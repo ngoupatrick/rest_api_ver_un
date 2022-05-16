@@ -76,7 +76,7 @@
     </style>
 </head>
 
-<body>
+<body onload="fct()">
     <form action="" method="post">
 
         <div class="container">
@@ -92,12 +92,44 @@
 
     </form>
     <span id="rep"></span>
-    <div id="show_user" onload="loadUser()">
-        <div id="show_user"></div>
-    </div>
+    <div id="show_user"></div>
     <script>
+        $(document).ready(function() {
+            var settings = {
+                'cache': false,
+                'dataType': "jsonp",
+                "async": true,
+                "crossDomain": true,
+                "url": "http://192.168.1.5:8000/users/1",
+                "method": "GET",
+                "headers": {
+                    "accept": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                }
+            };
+
+            $.ajax(settings).done(function(response) {
+                console.log(response);
+                alert("ici");
+
+            }).fail(function(data) {
+                alert("error");
+                $("#show_user").text(data[0]);
+            });
+        });
+
+        function fct() {
+            /*$("#show_user").text("Test").show();
+            alert("ici")
+            $.get("http://192.168.1.5:8000/users", function(data, status) {
+                //alert("Data: " + data + "\nStatus: " + status);
+                alert("ici")
+            });*/
+
+        }
+
         $("form").submit(function(event) {
-            var rep_span = $("#rep")
+            /*var rep_span = $("#rep")
             var login = $("#uname").val()
             var psw = $("#psw").val()
             var uri = "http://192.168.5.246:8000/users"
@@ -121,12 +153,7 @@
                 }
             }
             xhr.send("{'id':1}");
-            //event.preventDefault();
-
+            //event.preventDefault();*/
         });
-
-        function loadUser() {
-            $("#show_user").append("Test")
-        }
     </script>
 </body>

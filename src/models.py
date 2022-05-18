@@ -2,7 +2,7 @@ from src import db
 
 
 class Personne(db.Model):  # type:ignore    
-    id_personne = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     nom = db.Column(db.String(128), unique=True, nullable=False)
@@ -10,7 +10,7 @@ class Personne(db.Model):  # type:ignore
 
     def __repr__(self):
         rslt = {
-            "id_personne": self.id_personne,
+            "pid": self.pid,
             "created":self.created,
             "modified":self.modified,
             "nom": self.nom,
@@ -19,18 +19,18 @@ class Personne(db.Model):  # type:ignore
         return f'<Personne: {rslt}>'
 
 class User(db.Model):  # type:ignore    
-    id_user = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
-    id_personne = db.Column(db.Integer, default=0)
+    pid = db.Column(db.Integer, default=0)
     login = db.Column(db.String(60), unique=True, nullable=False)
     pass_hash = db.Column(db.String(128), nullable=False)
     def __repr__(self):
         rslt = {
-            "id_user": self.id_personne,
+            "uid": self.uid,
             "created":self.created,
             "modified":self.modified,
-            "id_personne": self.id_personne,
+            "pid": self.pid,
             "login":self.login,
             "pass_hash":self.pass_hash
             }

@@ -11,8 +11,7 @@ api.add_resource(UserResource,
                  '/users/<string:eid>')
 
 #source /home/patrick/Bureau/python/any_prj/envs/env_rest/bin/activate
-#sh run.sh
-# flask run --port=8000 -h 0.0.0.0 --reload
+#sh run.sh OR sh run.sh gunicorn OR sh run.sh default
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=8000)

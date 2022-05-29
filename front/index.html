@@ -100,7 +100,7 @@
                 'dataType': "jsonp",
                 "async": true,
                 "crossDomain": true,
-                "url": "http://192.168.1.5:8000/users/1",
+                "url": "http://192.168.1.5:8000/ppersonnes/1",
                 "method": "GET",
                 "headers": {
                     "accept": "application/json",
@@ -114,7 +114,7 @@
 
             }).fail(function(data) {
                 alert("error");
-                $("#show_user").text(data[0]);
+                $("#show_user").text(data);
             });
         });
 

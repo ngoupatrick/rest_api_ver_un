@@ -9,10 +9,14 @@ from datetime import datetime
 
 class PersonneResource(Resource):
     def get(self, eid=None):
+        p=None
         if eid:
-            data = personne_schema.dump(Personne.query.get_or_404(eid))
+            p=Personne.query.get_or_404(eid)
+            data = personne_schema.dump(p)
         else:
-            data = personnes_schema.dump(Personne.query.all())
+            p=Personne.query.all()
+            data = personnes_schema.dump(p)
+        breakpoint()
         return jsonify(data) if data else jsonify({"error": "Not found"}, 404)
 
     def post(self):
@@ -54,7 +58,7 @@ class UserResource(Resource):
             data = user_schema.dump(User.query.get_or_404(eid))
         else:
             data = users_schema.dump(User.query.all())
-        return jsonify(data) if data else jsonify({"error": "Not found"}, 404)
+        return jsonify(data) #if data else jsonify({"error": "Not found"}, 404)
 
     def post(self):
         json_data = json.loads(request.data.decode("utf-8"))

@@ -1,5 +1,5 @@
 from src import api, app  
-from src.resources import PersonneResource, UserResource
+from src.main.resources import PersonneResource, UserResource
 
 
 api.add_resource(PersonneResource,
@@ -11,7 +11,7 @@ api.add_resource(UserResource,
                  '/users/<string:eid>')
 
 #source /home/patrick/Bureau/python/any_prj/envs/env_rest/bin/activate
-#sh run.sh OR sh run.sh gunicorn OR sh run.sh default
+#sh run.sh OR sh run.sh gunicorn OR sh run.sh default OR sh run.sh wsgi
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=8000)

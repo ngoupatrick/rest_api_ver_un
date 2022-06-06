@@ -1,5 +1,6 @@
 from email.policy import default
-from src import db
+#from src.wsgi import db
+from . import db
 
 
 class Personne(db.Model):  # type:ignore
@@ -304,4 +305,4 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
         }
         return f'<Resultat: {rslt}>'
 
-db.create_all()
+#db.create_all()

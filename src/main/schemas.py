@@ -1,5 +1,5 @@
-from src import ma
-from src import models
+from . import ma
+from main import models
 
 
 class PersonneSchema(ma.SQLAlchemyAutoSchema):  # type:ignore

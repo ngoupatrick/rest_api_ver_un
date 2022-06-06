@@ -1,7 +1,7 @@
-from src.models import Personne, User
-from src.schemas import personne_schema, personnes_schema, user_schema, users_schema
+from main.models import Personne, User
+from main.schemas import personne_schema, personnes_schema, user_schema, users_schema
 from flask import request, jsonify  
-from src import db
+from . import db
 from flask_restful import Resource  # type:ignore
 import json
 from datetime import datetime

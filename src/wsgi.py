@@ -1,15 +1,11 @@
 from main import create_app
-#from main.routes import load_routes  # type:ignore
-from main.resources import PersonneResource,UserResource
 
-app, db, api, bcrypt, ma = create_app()
-#load_routes()
-api.add_resource(PersonneResource,
-                 '/personnes/',
-                 '/personnes/<string:eid>')
+app, db, bcrypt, ma = create_app()
 
-api.add_resource(UserResource,
-                 '/users/',
-                 '/users/<string:eid>')
+#source /home/patrick/Bureau/python/any_prj/envs/env_rest/bin/activate
+#source run.sh
+#sh run.sh OR sh run.sh gunicorn OR sh run.sh default OR sh run.sh wsgi
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
+    

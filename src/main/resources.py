@@ -6,7 +6,9 @@ from flask_restful import Resource  # type:ignore
 import json
 from datetime import datetime
 
+from main.views.utils import token_required
 
+@token_required
 class PersonneResource(Resource):
     def get(self, eid=None):
         p=None

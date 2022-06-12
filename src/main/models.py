@@ -1,6 +1,10 @@
-from email.policy import default
-#from src.wsgi import db
 from . import db
+import datetime
+import uuid
+import jwt  # type:ignore
+from werkzeug.security import (  # type:ignore
+    generate_password_hash, check_password_hash
+)
 
 
 class Personne(db.Model):  # type:ignore
@@ -253,12 +257,68 @@ class User(db.Model):
     stid = db.Column(db.Integer, db.ForeignKey('structure.stid'), nullable=False)
     gid = db.Column(db.Integer, db.ForeignKey('groups.gid'), nullable=False)
     
-    # listes des consultations édités à cet user
+    # listes des consultations édités par cet user
     consultations = db.relationship(
         'Consultation', backref='User', lazy=True, uselist=True)
     # listes des resultats édités à cet user
     consultations = db.relationship(
         'Resultat', backref='User', lazy=True, uselist=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.password_hash = generate_password_hash(kwargs.get('password'))
+        self.uid = str(uuid.uuid4())
+        
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        
+    @property
+    def password(self):
+        raise AttributeError("password is not readable attribute")
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def is_active(self):
+        return self.etat
+    
+    def activate(self):
+        self.etat = True
+        
+    def is_admin(self):
+        return True
+    
+    def generate_token(self, minutes=3):
+        from flask import current_app as app  # type:ignore
+        content = {
+            'uid' : self.uid,
+            'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes)
+        }
+        token = jwt.encode(
+            content, app.config['SECRET_KEY']
+        )
+        return token
+    
+    @staticmethod
+    def verify_token(token):
+        from flask import current_app as app  # type:ignore
+        try:
+            data = jwt.decode(
+                token, app.config['SECRET_KEY'], algorithms=['HS256']
+            )
+        except jwt.exceptions.InvalidSignatureError as e:
+            raise e
+        except jwt.exceptions.ExpiredSignatureError as e:
+            raise e
+        current_user = User.query.filter_by(uid=data['uid']).first()
+        return current_user
+
+
 
     def __repr__(self):
         rslt = {
@@ -305,4 +365,3 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
         }
         return f'<Resultat: {rslt}>'
 
-#db.create_all()

@@ -1,14 +1,17 @@
 import pathlib
 from os import environ, path
 from dotenv import load_dotenv  # type:ignore
+
 BASE_DIR = pathlib.Path(__file__).parent.resolve()  # current directory
 ENV_FILE = BASE_DIR / '.env'
 load_dotenv(ENV_FILE)
+
 class Config:
     DEBUG = True
     TESTING = True
     SECRET_KEY = environ.get("SECRET_KEY")
     FLASK_ENV = "development"
+    
     # sqlite
     DATABASE_NAME = "../data_test/test.sqlite3"
     DATABASE_PATH = BASE_DIR / DATABASE_NAME
@@ -16,11 +19,13 @@ class Config:
         "SQLALCHEMY_DATABASE_URI"
     ) or "sqlite:///{}".format(DATABASE_PATH)
     SQLALCHEMY_TRACK_MODIFICATIONS = environ.get("SQLALCHEMY_TRACK_MODIFICATIONS").lower().strip()=='true'
-    SQLALCHEMY_ECHO = environ.get("SQLALCHEMY_ECHO").lower().strip()=='true'
+    #SQLALCHEMY_ECHO = environ.get("SQLALCHEMY_ECHO").lower().strip()=='true'
+    
 class ProdConfig(Config):
     DEBUG = False
     TESTING = False
     FLASK_ENV = 'production'
+    
     # PG config
     DATABASE_HOST = environ.get("DATABASE_HOST")
     DATABASE_NAME = environ.get("DATABASE_NAME")  # type:ignore

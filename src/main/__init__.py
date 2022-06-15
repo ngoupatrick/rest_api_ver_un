@@ -14,11 +14,11 @@ def create_app(config_filename=None):
         app.config.from_object('config.base.Config')
     elif (app.config["ENV"] == 'production'):
         app.config.from_object('config.base.ProdConfig')
+    elif config_filename:
+        app.config.from_pyfile(config_filename)
     else:
         raise RuntimeError('Unknown environment setting provided.')
     
-    if config_filename:
-        app.config.from_pyfile(config_filename)
         
     db.init_app(app)
     ma = Marshmallow(db)

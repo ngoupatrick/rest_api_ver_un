@@ -16,7 +16,7 @@ class Personne(db.Model):  # type:ignore
     modified = db.Column(db.DateTime, server_default=db.func.now())
     nom = db.Column(db.String(128), unique=True, nullable=False)
     ville = db.Column(db.String(128), default="")
-    #users = db.relationship('User', backref='Personne',lazy=True, uselist=False)  # ,
+    # users = db.relationship('User', backref='Personne',lazy=True, uselist=False)  # ,
 
     def __repr__(self):
         rslt = {
@@ -25,10 +25,9 @@ class Personne(db.Model):  # type:ignore
             "modified": self.modified,
             "nom": self.nom,
             "ville": self.ville,
-            #"users": self.users
+            # "users": self.users
         }
         return f'<Personne: {rslt}>'
-
 
 
 # Class type of symptom
@@ -52,6 +51,8 @@ class Type_Symptome(db.Model):
         return f'<Type_Symptome: {rslt}>'
 
 # class of symptomes
+
+
 class Symptome(db.Model):
     __tablename__ = "symptome"
     sid = db.Column(db.Integer, primary_key=True)
@@ -74,6 +75,7 @@ class Symptome(db.Model):
         }
         return f'<Symptome: {rslt}>'
 
+
 class Consultation_Symptome(db.Model):
     __tablename__ = "consultation_symptome"
     csid = db.Column(db.Integer, primary_key=True)
@@ -94,6 +96,7 @@ class Consultation_Symptome(db.Model):
             "description": self.description
         }
         return f'<Consultation_Symptome: {rslt}>'
+
 
 class Consultation(db.Model):  # NOT YET FINISHED!!!
     __tablename__ = "consultation"
@@ -128,6 +131,7 @@ class Consultation(db.Model):  # NOT YET FINISHED!!!
             "resultats": self.resultats,
         }
         return f'<Consultation: {rslt}>'
+
 
 class Patient(db.Model):
     __tablename__ = "patient"
@@ -167,16 +171,17 @@ class Patient(db.Model):
         }
         return f'<Patient: {rslt}>'
 
+
 class User_Type(db.Model):
     __tablename__ = "user_type"
     utid = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     intitule = db.Column(db.String, unique=True, nullable=False)
-    #list of all users of this type
+    # list of all users of this type
     users = db.relationship(
         'User', backref='User_Type', lazy=True, uselist=True)
-    
+
     def __repr__(self):
         rslt = {
             "utid": self.utid,
@@ -186,22 +191,28 @@ class User_Type(db.Model):
             "users": self.users,
         }
         return f'<User_Type: {rslt}>'
-    
+
+
 class Groups(db.Model):
     __tablename__ = "groups"
     gid = db.Column(db.Integer, primary_key=True)
+    guid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     intitule = db.Column(db.String, unique=True, nullable=False)
     description = db.Column(db.Text, default='')
     access_perm = db.Column(db.Text, default='')
-    #list of all users of this group
+    # list of all users of this group
     users = db.relationship(
         'User', backref='Groups', lazy=True, uselist=True)
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.guid = str(uuid.uuid4())
+
     def __repr__(self):
         rslt = {
-            "gid": self.gid,
+            "guid": self.guid,
             "created": self.created,
             "modified": self.modified,
             "intitule": self.intitule,
@@ -210,7 +221,8 @@ class Groups(db.Model):
             "users": self.users,
         }
         return f'<Groups: {rslt}>'
-    
+
+
 class Structue(db.Model):
     __tablename__ = "structure"
     stid = db.Column(db.Integer, primary_key=True)
@@ -218,11 +230,11 @@ class Structue(db.Model):
     modified = db.Column(db.DateTime, server_default=db.func.now())
     immatriculation = db.Column(db.String, unique=True, nullable=False)
     intitule = db.Column(db.String, unique=True, nullable=False)
-    type_structure = db.Column(db.String, default='', nullable=False)    
-    #list of all users of this structure
+    type_structure = db.Column(db.String, default='', nullable=False)
+    # list of all users of this structure
     users = db.relationship(
         'User', backref='Structue', lazy=True, uselist=True)
-    
+
     def __repr__(self):
         rslt = {
             "stid": self.stid,
@@ -235,15 +247,17 @@ class Structue(db.Model):
         }
         return f'<Structue: {rslt}>'
 
+
 class User(db.Model):
     __tablename__ = "user"
     uid = db.Column(db.Integer, primary_key=True)
+    puid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     user_code = db.Column(db.String, unique=True, nullable=False)
-    login = db.Column(db.String(60), unique=True, nullable=False)
-    pass_hash = db.Column(db.String(128), nullable=False)
-    etat = db.Column(db.Boolean,default=True, nullable=False)    
+    login = db.Column(db.String(60), default="", nullable=False) # au cas où certains users n'aient paas acces au systeme
+    pass_hash = db.Column(db.String(128), default="", nullable=False) # ici, user est confondu avec une personne
+    etat = db.Column(db.Boolean, default=True, nullable=False)
     nom = db.Column(db.String, nullable=False)
     prenom = db.Column(db.String, default='')
     lieu_naiss = db.Column(db.String, default='')
@@ -251,12 +265,14 @@ class User(db.Model):
     sexe = db.Column(db.String, default='M', nullable=False)
     adresse = db.Column(db.Text, default='')
     tel = db.Column(db.String, default='')
-    
+
     # Foreignkeys
-    utid = db.Column(db.Integer, db.ForeignKey('user_type.utid'), nullable=False)
-    stid = db.Column(db.Integer, db.ForeignKey('structure.stid'), nullable=False)
+    utid = db.Column(db.Integer, db.ForeignKey(
+        'user_type.utid'), default=0, nullable=True)
+    stid = db.Column(db.Integer, db.ForeignKey(
+        'structure.stid'), default=0, nullable=True)
     gid = db.Column(db.Integer, db.ForeignKey('groups.gid'), nullable=False)
-    
+
     # listes des consultations édités par cet user
     consultations = db.relationship(
         'Consultation', backref='User', lazy=True, uselist=True)
@@ -266,44 +282,45 @@ class User(db.Model):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.password_hash = generate_password_hash(kwargs.get('password'))
-        self.uid = str(uuid.uuid4())
-        
+        self.pass_hash = generate_password_hash(kwargs.get('password'))
+        self.puid = str(uuid.uuid4())
+        self.user_code=str(uuid.uuid4())
+
     def save(self):
         db.session.add(self)
         db.session.commit()
-        
+
     @property
     def password(self):
         raise AttributeError("password is not readable attribute")
-    
+
     @password.setter
     def password(self, password):
-        self.password_hash = generate_password_hash(password)
-        
+        self.pass_hash = generate_password_hash(password)
+
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
-    
+        return check_password_hash(self.pass_hash, password)
+
     def is_active(self):
         return self.etat
-    
+
     def activate(self):
         self.etat = True
-        
+
     def is_admin(self):
         return True
-    
-    def generate_token(self, minutes=3):
+
+    def generate_token(self, minutes=60):
         from flask import current_app as app  # type:ignore
         content = {
-            'uid' : self.uid,
-            'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes)
+            'puid': self.puid,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes)
         }
         token = jwt.encode(
             content, app.config['SECRET_KEY']
         )
         return token
-    
+
     @staticmethod
     def verify_token(token):
         from flask import current_app as app  # type:ignore
@@ -315,10 +332,10 @@ class User(db.Model):
             raise e
         except jwt.exceptions.ExpiredSignatureError as e:
             raise e
-        current_user = User.query.filter_by(uid=data['uid']).first()
+        except:
+            return None
+        current_user = User.query.filter_by(puid=data['puid']).first()
         return current_user
-
-
 
     def __repr__(self):
         rslt = {
@@ -340,8 +357,9 @@ class User(db.Model):
             "adresse": self.adresse,
             "tel": self.tel,
         }
-        return f'<User: {rslt}>'  
-    
+        return f'<User: {rslt}>'
+
+
 class Resultat(db.Model):  # NOT YET FINISHED!!!
     __tablename__ = "resultat"
     rid = db.Column(db.Integer, primary_key=True)
@@ -350,9 +368,10 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
     code_resultat = db.Column(db.String, unique=True, nullable=False)
     date_resultat = db.Column(db.DateTime, server_default=db.func.now())
     # Foreignkeys
-    cid = db.Column(db.Integer, db.ForeignKey('consultation.cid'), nullable=False)
+    cid = db.Column(db.Integer, db.ForeignKey(
+        'consultation.cid'), nullable=False)
     uid = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
-    
+
     def __repr__(self):
         rslt = {
             "rid": self.rid,
@@ -364,4 +383,3 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
             "date_resultat": self.date_resultat,
         }
         return f'<Resultat: {rslt}>'
-

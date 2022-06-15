@@ -12,13 +12,17 @@ def token_required(f):
             print(token)
         if not token:
             return jsonify({'message' : 'Token is missing!'}), 401
-        try:
+        try:            
             current_user = User.verify_token(token)
         except jwt.exceptions.InvalidSignatureError as e:
             return jsonify({'message' : str(e)}), 401
         except jwt.exceptions.ExpiredSignatureError as e:
-            return jsonify({'message' : str(e)}), 401
-        if current_user is None:
-            return jsonify({'message' : 'User is None!'}), 401
+            return jsonify({'message' : str(e)}), 401        
+        #if current_user is None:
+        #    return jsonify({'message' : 'User is None!'}), 401
         return f(current_user, *args, **kwargs)
     return decorated
+
+def checkAdmin(current_user:User)->bool:
+    if not current_user: return False
+    return current_user.is_admin()

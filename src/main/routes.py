@@ -2,7 +2,8 @@ from flask import Blueprint
 from flask_restful import Api  # type:ignore
 
 from main.views.users_views import auth
-from main.resources import PersonneResource
+from main.resources import PersonneResource, UserResource
+from main.views.groupViews import GroupResource
 
 #creation des differentes urls de bases
 default_routes = Blueprint('default_routes', __name__,url_prefix="/V1")
@@ -19,3 +20,7 @@ api = Api(default_routes)
 api.add_resource(PersonneResource,
                  '/personnes/',
                  '/personnes/<string:eid>')
+
+api.add_resource(GroupResource,
+                 '/groups/',
+                 '/groups/<string:guid>')

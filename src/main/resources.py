@@ -8,7 +8,7 @@ from datetime import datetime
 
 from main.views.utils import token_required
 
-@token_required
+#@token_required
 class PersonneResource(Resource):
     def get(self, eid=None):
         p=None
@@ -18,7 +18,6 @@ class PersonneResource(Resource):
         else:
             p=Personne.query.all()
             data = personnes_schema.dump(p)
-        breakpoint()
         return jsonify(data) if data else jsonify({"error": "Not found"}, 404)
 
     def post(self):

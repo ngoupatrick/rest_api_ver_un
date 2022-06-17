@@ -1,7 +1,7 @@
 from click import password_option
 from flask import make_response, request, jsonify, Blueprint  # type:ignore
-from main.models import User  
-from main.views.utils import token_required, checkAdmin
+from main.models.models import User  
+from main.utils.utils import token_required, checkAdmin
 
 auth = Blueprint('auth', __name__)
 
@@ -33,7 +33,7 @@ def login():
     )
     resp.headers['WWW-Authenticate'] = 'Basic realm="Login required!"'
     return resp
-
+'''
 @auth.route('/user', methods=['GET'])
 @token_required
 def get_all_users(current_user):
@@ -52,6 +52,7 @@ def get_all_users(current_user):
 @auth.route('/user/<pubid>', methods=['GET'])
 @token_required
 def get_one_user(current_user, puid):
+    breakpoint()
     if not checkAdmin(current_user):
         return jsonify({'message' : 'Cannot perform that function!'})
     user = User.query.filter_by(puid=puid).first()
@@ -76,3 +77,4 @@ def create_user(current_user):
     new_user = User(login=login, password=password, nom=nom, gid=gid)
     new_user.save()
     return jsonify({'message' : 'New user created!'}), 201
+'''

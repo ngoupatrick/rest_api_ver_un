@@ -26,7 +26,7 @@ def create_app(config_filename=None):
     
     with app.app_context():
         # import blueprints
-        from main.routes import default_routes,admin_routes
+        from main.routes.routes import default_routes,admin_routes
         
         # Register Blueprints
         app.register_blueprint(default_routes)

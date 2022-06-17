@@ -1,4 +1,4 @@
-from . import db
+from main import db
 import datetime
 import uuid
 import jwt  # type:ignore
@@ -6,49 +6,35 @@ from werkzeug.security import (  # type:ignore
     generate_password_hash, check_password_hash
 )
 
-
-class Personne(db.Model):  # type:ignore
-
-    __tablename__ = "personne"
-
-    pid = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, server_default=db.func.now())
-    modified = db.Column(db.DateTime, server_default=db.func.now())
-    nom = db.Column(db.String(128), unique=True, nullable=False)
-    ville = db.Column(db.String(128), default="")
-    # users = db.relationship('User', backref='Personne',lazy=True, uselist=False)  # ,
-
-    def __repr__(self):
-        rslt = {
-            "pid": self.pid,
-            "created": self.created,
-            "modified": self.modified,
-            "nom": self.nom,
-            "ville": self.ville,
-            # "users": self.users
-        }
-        return f'<Personne: {rslt}>'
-
-
 # Class type of symptom
 class Type_Symptome(db.Model):
     __tablename__ = "type_symptome"
     tsid = db.Column(db.Integer, primary_key=True)
+    ptsid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     intitule = db.Column(db.String, unique=True, nullable=False)
     symptomes = db.relationship(
         'Symptome', backref='Type_Symptome', lazy=True, uselist=True)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ptsid = str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {
             "tsid": self.tsid,
+            "ptsid": self.ptsid,
             "created": self.created,
             "modified": self.modified,
             "intitule": self.intitule,
             "symptomes": self.symptomes
         }
         return f'<Type_Symptome: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 # class of symptomes
 
@@ -56,17 +42,23 @@ class Type_Symptome(db.Model):
 class Symptome(db.Model):
     __tablename__ = "symptome"
     sid = db.Column(db.Integer, primary_key=True)
+    psid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
-    intitule = db.Column(db.String, unique=True, nullable=False)
+    intitule = db.Column(db.String, nullable=False)
     tsid = db.Column(db.Integer, db.ForeignKey(
         'type_symptome.tsid'), nullable=False)
     consultation_symptomes = db.relationship(  # au vu de la definition, est-ce utile?
         'Consultation_Symptome', backref='Symptome', lazy=True, uselist=True)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.psid = str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {
             "sid": self.sid,
+            "psid": self.psid,
             "tsid": self.tsid,
             "created": self.created,
             "modified": self.modified,
@@ -74,21 +66,32 @@ class Symptome(db.Model):
             "symptomes": self.consultation_symptomes
         }
         return f'<Symptome: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Consultation_Symptome(db.Model):
     __tablename__ = "consultation_symptome"
     csid = db.Column(db.Integer, primary_key=True)
+    pcsid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     description = db.Column(db.Text, default='')
     sid = db.Column(db.Integer, db.ForeignKey('symptome.sid'), nullable=False)
     cid = db.Column(db.Integer, db.ForeignKey(
         'consultation.cid'), nullable=False)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.pcsid = str(uuid.uuid4())
+
 
     def __repr__(self):
         rslt = {
             "csid": self.csid,
+            "pcsid": self.pcsid,
             "sid": self.sid,
             "cid": self.cid,
             "created": self.created,
@@ -96,11 +99,16 @@ class Consultation_Symptome(db.Model):
             "description": self.description
         }
         return f'<Consultation_Symptome: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Consultation(db.Model):  # NOT YET FINISHED!!!
     __tablename__ = "consultation"
     cid = db.Column(db.Integer, primary_key=True)
+    pcid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     code_consul = db.Column(db.String, unique=True, nullable=False)
@@ -117,6 +125,11 @@ class Consultation(db.Model):  # NOT YET FINISHED!!!
     # liste des resultats associés à cette consultation
     resultats = db.relationship(
         'Resultat', backref='Consultation', lazy=True, uselist=False)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.pcid = str(uuid.uuid4())
+        self.code_consul = str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {
@@ -131,11 +144,17 @@ class Consultation(db.Model):  # NOT YET FINISHED!!!
             "resultats": self.resultats,
         }
         return f'<Consultation: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 
 class Patient(db.Model):
     __tablename__ = "patient"
     pid = db.Column(db.Integer, primary_key=True)
+    ppid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     patient_code = db.Column(db.String, unique=True, nullable=False)
@@ -151,10 +170,16 @@ class Patient(db.Model):
     # listes des consultations associées à ce patient
     consultations = db.relationship(
         'Consultation', backref='Patient', lazy=True, uselist=True)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ppid = str(uuid.uuid4())
+        self.patient_code = str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {
             "pid": self.pid,
+            "ppid": self.ppid,
             "created": self.created,
             "modified": self.modified,
             "patient_code": self.patient_code,
@@ -170,17 +195,26 @@ class Patient(db.Model):
             "consultations": self.consultations,
         }
         return f'<Patient: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class User_Type(db.Model):
     __tablename__ = "user_type"
     utid = db.Column(db.Integer, primary_key=True)
+    putid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     intitule = db.Column(db.String, unique=True, nullable=False)
     # list of all users of this type
     users = db.relationship(
         'User', backref='User_Type', lazy=True, uselist=True)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.putid = str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {
@@ -191,6 +225,10 @@ class User_Type(db.Model):
             "users": self.users,
         }
         return f'<User_Type: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Groups(db.Model):
@@ -205,7 +243,7 @@ class Groups(db.Model):
     # list of all users of this group
     users = db.relationship(
         'User', backref='Groups', lazy=True, uselist=True)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.guid = str(uuid.uuid4())
@@ -221,11 +259,16 @@ class Groups(db.Model):
             "users": self.users,
         }
         return f'<Groups: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
-class Structue(db.Model):
+class Structure(db.Model):
     __tablename__ = "structure"
     stid = db.Column(db.Integer, primary_key=True)
+    pstid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     immatriculation = db.Column(db.String, unique=True, nullable=False)
@@ -235,9 +278,15 @@ class Structue(db.Model):
     users = db.relationship(
         'User', backref='Structue', lazy=True, uselist=True)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.pstid = str(uuid.uuid4())
+        self.immatriculation = str(uuid.uuid4())
+
     def __repr__(self):
         rslt = {
             "stid": self.stid,
+            "pstid": self.pstid,
             "created": self.created,
             "modified": self.modified,
             "intitule": self.intitule,
@@ -246,6 +295,10 @@ class Structue(db.Model):
             "users": self.users,
         }
         return f'<Structue: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class User(db.Model):
@@ -255,8 +308,10 @@ class User(db.Model):
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     user_code = db.Column(db.String, unique=True, nullable=False)
-    login = db.Column(db.String(60), default="", nullable=False) # au cas où certains users n'aient paas acces au systeme
-    pass_hash = db.Column(db.String(128), default="", nullable=False) # ici, user est confondu avec une personne
+    # au cas où certains users n'aient paas acces au systeme
+    login = db.Column(db.String(60), default="", nullable=False)
+    # ici, user est confondu avec une personne
+    pass_hash = db.Column(db.String(128), default="", nullable=False)
     etat = db.Column(db.Boolean, default=True, nullable=False)
     nom = db.Column(db.String, nullable=False)
     prenom = db.Column(db.String, default='')
@@ -284,8 +339,8 @@ class User(db.Model):
         super().__init__(**kwargs)
         self.pass_hash = generate_password_hash(kwargs.get('password'))
         self.puid = str(uuid.uuid4())
-        self.user_code=str(uuid.uuid4())
-
+        self.user_code = str(uuid.uuid4())
+        
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -310,7 +365,7 @@ class User(db.Model):
     def is_admin(self):
         return True
 
-    def generate_token(self, minutes=60):
+    def generate_token(self, minutes=600):
         from flask import current_app as app  # type:ignore
         content = {
             'puid': self.puid,
@@ -363,6 +418,7 @@ class User(db.Model):
 class Resultat(db.Model):  # NOT YET FINISHED!!!
     __tablename__ = "resultat"
     rid = db.Column(db.Integer, primary_key=True)
+    prid = db.Column(db.String(50), unique=True)
     created = db.Column(db.DateTime, server_default=db.func.now())
     modified = db.Column(db.DateTime, server_default=db.func.now())
     code_resultat = db.Column(db.String, unique=True, nullable=False)
@@ -371,10 +427,16 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
     cid = db.Column(db.Integer, db.ForeignKey(
         'consultation.cid'), nullable=False)
     uid = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.prid = str(uuid.uuid4())
+        self.code_resultat = str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {
             "rid": self.rid,
+            "prid": self.prid,
             "cid": self.cid,
             "uid": self.uid,
             "created": self.created,
@@ -383,3 +445,7 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
             "date_resultat": self.date_resultat,
         }
         return f'<Resultat: {rslt}>'
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

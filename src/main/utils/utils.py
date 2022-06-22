@@ -1,27 +1,32 @@
-from flask import request, jsonify  # type:ignore
-import jwt  # type:ignore
-from functools import wraps
-from main.models.models import User
+from . import *
 
 def token_required(f):
     @wraps(f)
-    def decorated(*args, **kwargs): 
+    def decorated(*args, **kwargs):
         token = None
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
-            print(token)
-        if not token:
-            return jsonify({'message' : 'Token is missing!'}), 401
-        try:                   
+        if not token:            
+            resp = returnRep(msgErr="Token is missing", codeErr=401, isRealm=True, msgRealm="Login required!") 
+            return resp
+        try:
             current_user = User.verify_token(token)
         except jwt.exceptions.InvalidSignatureError as e:
-            return jsonify({'message' : str(e)}), 401
+            resp = returnRep(msgErr=str(e), codeErr=401, isRealm=True, msgRealm="Login required!") 
+            return resp
         except jwt.exceptions.ExpiredSignatureError as e:
-            return jsonify({'message' : str(e)}), 401        
-        #if current_user is None:
-        #    return jsonify({'message' : 'User is None!'}), 401        
+            resp = returnRep(msgErr=str(e), codeErr=401, isRealm=True, msgRealm="Login required!")
+            return resp
+        if current_user is None:
+            resp = returnRep(msgErr="No matching user found", codeErr=401, isRealm=True, msgRealm="Login required!")
+            return resp
         return f(current_user, *args, **kwargs)
     return decorated
+
+def returnRep(msgErr,codeErr,isRealm=False, msgRealm="Login required!"):
+    resp = make_response({"message": msgErr}, codeErr)
+    if isRealm: resp = make_response({"message": msgErr}, codeErr, {'WWW-Authenticate' : f'Basic realm="{msgRealm}"'})
+    return resp
 
 def checkAdmin(current_user:User)->bool:
     if not current_user: return False

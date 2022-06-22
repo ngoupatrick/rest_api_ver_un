@@ -1,7 +1,13 @@
 from click import password_option
 from flask import make_response, request, jsonify, Blueprint  # type:ignore
+#for wsgi.py
+'''
 from main.models.models import User  
 from main.utils.utils import token_required, checkAdmin
+'''
+#for main.py
+from src.main.models.models import User  
+from src.main.utils.utils import token_required, checkAdmin
 
 auth = Blueprint('auth', __name__)
 
@@ -38,7 +44,7 @@ def login():
 @token_required
 def get_all_users(current_user):
     if not checkAdmin(current_user):
-        return jsonify({'message' : 'Cannot perform that function!'})
+        return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
     users = User.query.all()
     output = []
     for user in users:
@@ -54,7 +60,7 @@ def get_all_users(current_user):
 def get_one_user(current_user, puid):
     breakpoint()
     if not checkAdmin(current_user):
-        return jsonify({'message' : 'Cannot perform that function!'})
+        return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
     user = User.query.filter_by(puid=puid).first()
     if not user:
         return jsonify({'message' : 'No user found!'})
@@ -68,7 +74,7 @@ def get_one_user(current_user, puid):
 @token_required
 def create_user(current_user):
     if not checkAdmin(current_user):
-        return jsonify({'message' : 'Cannot perform that function!'})
+        return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
     json_data = request.get_json()
     password = json_data.get("password", "")
     login=json_data.get("login", "")

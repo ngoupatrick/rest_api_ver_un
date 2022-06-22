@@ -1,0 +1,1 @@
+{"id":"4f58d20c-031b-4bb8-9764-db580f39b7e3","space":23075,"runtime":"python3.9","name":"rest_api","path":"p0h0ow","project":"a0t2fywh","account":"144798365827","region":"eu-central-1","deps":["python-dotenv","jwt","Werkzeug","Flask","Flask-RESTful","Flask-Bcrypt","Flask-SQLAlchemy","flask-marshmallow"],"envs":null,"public":true,"log_level":"debug","cron":""}

@@ -2,7 +2,7 @@
 
 #FOR DEFAULT FLASK SERVER
 default_server(){
-    export FLASK_APP=./src/wsgi.py
+    export FLASK_APP=./main.py #./src/wsgi.py
     export FLASK_ENV="development"
     flask run --port=8000 -h 0.0.0.0 --reload
 }

@@ -5,19 +5,19 @@ class UserResource(Resource):
     @token_required
     def get(current_user:User, self, puid=None):          
         if not checkAdmin(current_user):
-            return jsonify({'message' : 'Cannot perform that function!'})        
+            return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")        
         if puid:            
             u=User.query.filter_by(puid=puid).first_or_404(description='Not Found!')
             data = user_schema.dump(u)
         else:
             u=User.query.all()
             data = users_schema.dump(u)  
-        return data if data else jsonify({"error": "Not found!"}, 404)
+        return data if data else returnRep(msgErr='Data Not found!', codeErr=404)
     
     @token_required
     def post(current_user:User,self):
         if not checkAdmin(current_user):
-            return jsonify({'message' : 'Cannot perform that function!'})    
+            return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")    
         json_data = request.get_json()
         puid = json_data.get("puid", "")
         if puid:  
@@ -26,12 +26,12 @@ class UserResource(Resource):
             #TODO: CHECK GID
             data = User(**json_data)
             data.save()
-        return user_schema.dump(data) if data else jsonify({"error": "Not found"}, 404)
+        return user_schema.dump(data) if data else returnRep(msgErr='Data Not found!', codeErr=404)
     
     @token_required
     def put(current_user:User,self): 
         if not checkAdmin(current_user):
-            return jsonify({'message' : 'Cannot perform that function!'}) 
+            return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!") 
         json_data = request.get_json()
         puid = json_data.get("puid","")
         data={}        
@@ -42,6 +42,6 @@ class UserResource(Resource):
                 #TODO: CHECK GID
                 data.update(json_data)
                 db.session.commit()
-        return user_schema.dump(data.first_or_404(description='Not Found!')) if data else jsonify({"error": "Not found"}, 404)
+        return user_schema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)
 
     

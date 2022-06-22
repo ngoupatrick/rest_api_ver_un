@@ -1,6 +1,5 @@
-from main import ma
-from main.models import models
 
+from . import *
 
 class Type_SymptomeSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:

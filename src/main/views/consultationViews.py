@@ -5,19 +5,19 @@ class ConsultationResource(Resource):
     @token_required
     def get(current_user:User, self, pcid=None):          
         if not checkAdmin(current_user):
-            return jsonify({'message' : 'Cannot perform that function!'})
+            return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
         if pcid:            
             g=Consultation.query.filter_by(pcid=pcid).first_or_404(description='Not Found!')
             data = consultation_schema.dump(g)
         else:
             g=Consultation.query.all()
             data = consultations_schema.dump(g) 
-        return data if data else jsonify({"error": "Not found!"}, 404)
+        return data if data else returnRep(msgErr='Data Not found!', codeErr=404)
     
     @token_required
     def post(current_user:User,self):
         if not checkAdmin(current_user):
-            return jsonify({'message' : 'Cannot perform that function!'})    
+            return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")    
         json_data = request.get_json()
         pcid = json_data.get("pcid", "")
         
@@ -26,12 +26,12 @@ class ConsultationResource(Resource):
         else:
             data = Consultation(**json_data)
             data.save()    
-        return consultation_schema.dump(data) if data else jsonify({"error": "Not found"}, 404)
+        return consultation_schema.dump(data) if data else returnRep(msgErr='Data Not found!', codeErr=404)
     
     @token_required
     def put(current_user:User,self): 
         if not checkAdmin(current_user):
-            return jsonify({'message' : 'Cannot perform that function!'}) 
+            return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!") 
         json_data = request.get_json()
         pcid = json_data.get("pcid","")
         data={}        
@@ -41,4 +41,4 @@ class ConsultationResource(Resource):
                 json_data['modified'] = datetime.now()
                 data.update(json_data)
                 db.session.commit()
-        return consultation_schema.dump(data.first_or_404(description='Not Found!')) if data else jsonify({"error": "Not found"}, 404)
+        return consultation_schema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)

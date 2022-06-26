@@ -1,13 +1,15 @@
 from click import password_option
 from flask import make_response, request, jsonify, Blueprint  # type:ignore
 #for wsgi.py
-'''
+
 from main.models.models import User  
 from main.utils.utils import token_required, checkAdmin
-'''
+
 #for main.py
+'''
 from src.main.models.models import User  
 from src.main.utils.utils import token_required, checkAdmin
+'''
 
 auth = Blueprint('auth', __name__)
 
@@ -33,7 +35,7 @@ def login():
         return resp
     if user.verify_password(auth.password):        
         token = user.generate_token()
-        return jsonify({'token' : token.decode('utf-8')})
+        return jsonify({'token' : token.decode('utf-8'),'puid':user.puid})
     resp = make_response(
         {"message": "No auth, no user, nothing"}, 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'}
     )

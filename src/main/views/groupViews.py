@@ -13,7 +13,7 @@ class GroupResource(Resource):
             data = group_schema.dump(g)
         else:
             g = Groups.query.all()
-            data = groups_schema.dump(g)
+            data = groups_schema.dump(g)  
         return data if data else returnRep(msgErr='Data Not found!', codeErr=404)
 
     @token_required

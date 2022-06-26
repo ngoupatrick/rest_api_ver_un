@@ -1,6 +1,8 @@
 from . import *
 
 # Class type of symptom
+
+
 class Type_Symptome(db.Model):
     __tablename__ = "type_symptome"
     tsid = db.Column(db.Integer, primary_key=True)
@@ -10,7 +12,7 @@ class Type_Symptome(db.Model):
     intitule = db.Column(db.String, unique=True, nullable=False)
     symptomes = db.relationship(
         'Symptome', backref='Type_Symptome', lazy=True, uselist=True)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ptsid = str(uuid.uuid4())
@@ -25,7 +27,7 @@ class Type_Symptome(db.Model):
             "symptomes": self.symptomes
         }
         return f'<Type_Symptome: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -44,7 +46,7 @@ class Symptome(db.Model):
         'type_symptome.tsid'), nullable=False)
     consultation_symptomes = db.relationship(  # au vu de la definition, est-ce utile?
         'Consultation_Symptome', backref='Symptome', lazy=True, uselist=True)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.psid = str(uuid.uuid4())
@@ -60,7 +62,7 @@ class Symptome(db.Model):
             "symptomes": self.consultation_symptomes
         }
         return f'<Symptome: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -76,11 +78,10 @@ class Consultation_Symptome(db.Model):
     sid = db.Column(db.Integer, db.ForeignKey('symptome.sid'), nullable=False)
     cid = db.Column(db.Integer, db.ForeignKey(
         'consultation.cid'), nullable=False)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pcsid = str(uuid.uuid4())
-
 
     def __repr__(self):
         rslt = {
@@ -93,7 +94,7 @@ class Consultation_Symptome(db.Model):
             "description": self.description
         }
         return f'<Consultation_Symptome: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -119,7 +120,7 @@ class Consultation(db.Model):  # NOT YET FINISHED!!!
     # liste des resultats associés à cette consultation
     resultats = db.relationship(
         'Resultat', backref='Consultation', lazy=True, uselist=False)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pcid = str(uuid.uuid4())
@@ -138,11 +139,10 @@ class Consultation(db.Model):  # NOT YET FINISHED!!!
             "resultats": self.resultats,
         }
         return f'<Consultation: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
-
 
 
 class Patient(db.Model):
@@ -164,7 +164,7 @@ class Patient(db.Model):
     # listes des consultations associées à ce patient
     consultations = db.relationship(
         'Consultation', backref='Patient', lazy=True, uselist=True)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ppid = str(uuid.uuid4())
@@ -189,7 +189,7 @@ class Patient(db.Model):
             "consultations": self.consultations,
         }
         return f'<Patient: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -205,7 +205,7 @@ class User_Type(db.Model):
     # list of all users of this type
     users = db.relationship(
         'User', backref='User_Type', lazy=True, uselist=True)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.putid = str(uuid.uuid4())
@@ -219,7 +219,7 @@ class User_Type(db.Model):
             "users": self.users,
         }
         return f'<User_Type: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -253,7 +253,7 @@ class Groups(db.Model):
             "users": self.users,
         }
         return f'<Groups: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -289,7 +289,7 @@ class Structure(db.Model):
             "users": self.users,
         }
         return f'<Structue: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -326,7 +326,7 @@ class User(db.Model):
     consultations = db.relationship(
         'Consultation', backref='User', lazy=True, uselist=True)
     # listes des resultats édités à cet user
-    consultations = db.relationship(
+    resultats = db.relationship(
         'Resultat', backref='User', lazy=True, uselist=True)
 
     def __init__(self, **kwargs):
@@ -334,7 +334,7 @@ class User(db.Model):
         self.pass_hash = generate_password_hash(kwargs.get('password'))
         self.puid = str(uuid.uuid4())
         self.user_code = str(uuid.uuid4())
-        
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -405,6 +405,8 @@ class User(db.Model):
             "sexe": self.sexe,
             "adresse": self.adresse,
             "tel": self.tel,
+            "resultats": self.resultats,
+            "consultations": self.consultations,
         }
         return f'<User: {rslt}>'
 
@@ -421,7 +423,7 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
     cid = db.Column(db.Integer, db.ForeignKey(
         'consultation.cid'), nullable=False)
     uid = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.prid = str(uuid.uuid4())
@@ -439,7 +441,7 @@ class Resultat(db.Model):  # NOT YET FINISHED!!!
             "date_resultat": self.date_resultat,
         }
         return f'<Resultat: {rslt}>'
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()

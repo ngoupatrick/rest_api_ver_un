@@ -1,11 +1,11 @@
 python-dotenv
-jwt
+PyJWT
 Werkzeug
 Flask
-functools
 gunicorn
 db-sqlite3
 Flask-RESTful
 Flask-Bcrypt
 Flask-SQLAlchemy
 flask-marshmallow
+SQLAlchemy

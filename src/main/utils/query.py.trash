@@ -1,0 +1,207 @@
+import re
+from functools import wraps
+import json
+from typing import Callable, Literal, Union, Dict, Optional, Tuple, Any, Mapping
+
+from flask import request
+from flask_sqlalchemy import DefaultMeta, Model, BaseQuery  # type:ignore
+
+from sqlalchemy import String, cast, func  # type:ignore
+from sqlalchemy.orm import ColumnProperty, InstrumentedAttribute, RelationshipProperty  # type:ignore
+from sqlalchemy.sql.elements import BinaryExpression  # type:ignore
+
+
+ALL_FIELDS = "__all__"
+FILTERING_OPERATORS = {
+    "in": "in_",
+    "eq": "__eq__",
+    "not": "__ne__",
+    "gte": "__ge__",
+    "lte": "__le__",
+    "gt": "__gt__",
+    "lt": "__lt__",
+    "like": "like",
+}
+
+
+def filter_query(
+    base_query: Union[Model, Callable],
+    search_fields: Union[list, Literal["__all__"]] = [],
+):
+    def wrapper(func):
+        search_fields_term = "|".join(search_fields)
+        operators = list(FILTERING_OPERATORS.keys()) + ["isnull"]
+        operators_term = "|".join(operators)
+        search_fields_regex = re.compile(
+            rf"({search_fields_term})(__~?({operators_term}))?"
+        )
+
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            query = (
+                base_query.query
+                if isinstance(base_query, Model) or isinstance(base_query, DefaultMeta)
+                else base_query(**kwargs)
+            )
+
+            filtered_args = (
+                dict(request.args)
+                if search_fields == ALL_FIELDS
+                else {
+                    k: v
+                    for (k, v) in request.args.items()
+                    if search_fields_regex.fullmatch(k)
+                }
+            )
+
+            set_query(query.magic_filter(filtered_args, raise_errors=False))
+            return func(*args, **kwargs)
+
+        return decorated
+
+    return wrapper
+
+
+def parse_magic_filter_key(
+        model: Model, filter_key: str, raise_errors: bool = False
+) -> Optional[Tuple[Model, str, Dict[Model, BinaryExpression]]]:
+    models_to_join = {}
+    for attribute in filter_key.split("__"):
+        column = getattr(model, attribute, None)
+        if isinstance(column, InstrumentedAttribute):
+            if isinstance(column.property, ColumnProperty):
+                return model, attribute, models_to_join
+            elif isinstance(column.property, RelationshipProperty):
+                model = column.property.entity.class_
+
+                # we need to specify the join clause, so that it is always joined from the base_model
+                # and the behavior doesn't depend on the order of our joins.
+                models_to_join[model] = column.property.primaryjoin
+            else:
+                if raise_errors:
+                    raise AttributeError(
+                        f"Invalid filtering attribute: {filter_key}")
+                return None
+        else:
+            # we don't want to continue looping if first split is not an InstrumentedAttribute
+            if raise_errors:
+                raise AttributeError(
+                    f"Invalid filtering attribute: {filter_key}")
+            return None
+
+    if raise_errors:
+        raise AttributeError("No attribute found to filter on")
+    return None
+
+
+def build_magic_filter_operation(
+    model: Model, attribute_name: str, value: Any, possible_operator: str
+) -> BinaryExpression:
+    """
+    This returns a ready-to-use SQLAlchemy operation that can be passed to query.filter
+
+    :param model: SQLAlchemy model containing the attribute to filter on
+    :param attribute_name: name of the attribute to filter on
+    :param value: value to filter with
+    :param possible_operator: possible operator string
+
+    """
+    column = getattr(model, attribute_name)
+    revert, operator = _strip_not_operator(possible_operator)
+
+    # if operator is "in", we need to cast the string value as a list
+    if operator == "in":
+        try:
+            value = json.loads(value.replace("'", '"'))
+        except:
+            breakpoint()
+            #logger.debug(value)
+            #logger.exception("Couldn't parse filter for __in operator:")
+            if not isinstance(value, list):
+                value = []
+
+    # make string filtering case insensitive
+    if isinstance(column.property.columns[0].type, String):
+        # lower database stored value, and cast it as string (avoid error on enum fields)
+        column = func.lower(cast(column, String))
+        # lower query value
+        if operator == "in":
+            # if operator is in, we need to lower every element of the list
+            value = [e.lower() for e in value]
+        else:
+            value = func.lower(value)
+
+    if operator == "isnull":
+        usable_operator = "is_" if value in [True, "True", "true"] else "isnot"
+        value = None
+    else:
+        usable_operator = FILTERING_OPERATORS.get(operator, "__eq__")
+
+    operation = getattr(column, usable_operator)(value)
+    if revert:
+        operation = ~operation
+    return operation
+
+
+class Query(BaseQuery):
+    def magic_filter(self, filters: Mapping, raise_errors: bool = True):
+        og_model = self._get_base_model()
+        for key, value in filters.items():
+            if parsed := parse_magic_filter_key(
+                og_model, key, raise_errors=raise_errors
+            ):
+                model, attribute_name, models_to_join = parsed
+                self, _status = self.join_models_if_not_already_joined(
+                    models_to_join, raise_errors=raise_errors
+                )
+                # this make sure our query doesn't break when we run it with raise_errors=False, and
+                # an unsupported join is asked. This will just skip the current filter.
+                # in case raise_errors=True, self.join_models_if_not_already_joined would already have
+                # raised the expected Exception.
+                if _status:
+                    operation = build_magic_filter_operation(
+                        model, attribute_name, value, key.split("__")[-1]
+                    )
+                    self = self.filter(operation)
+
+        return self
+
+    def _get_base_model(self) -> Model:
+        return self._raw_columns[0].entity_namespace
+
+    def join_models_if_not_already_joined(
+        self,
+        models: Dict[Model, BinaryExpression],
+        raise_errors: bool,
+        is_outer: bool = False,
+    ):
+        # boolean that can be used to know if the join asked is supported, in case raise_errors was set to False.
+        _status = True
+        # construct a dict of shape {Model: BinaryExpression}
+        joined_models = {e[0].entity_namespace: e[1]
+                         for e in self._legacy_setup_joins}
+
+        for model, on_clause in models.items():
+            already_joined_on_clause = joined_models.get(model, None)
+            # it means this model has not been joined, so we join it, according to the models_to_join on_clause
+            if already_joined_on_clause is None:
+                self = self.join(model, on_clause, isouter=is_outer)
+
+            # for now, we don't support joining two times the same model with different on_clauses
+            # to do so, it would mean we would have to rework our structure, so that we can
+            # use sqlalchemy.aliased to join multiple times the same model.
+            elif (
+                already_joined_on_clause is not None
+                and not already_joined_on_clause.compare(on_clause)
+            ):
+                _status = False
+                breakpoint()
+                '''
+                logger.error(
+                    f"Model {model} is already joined using a different on_clause"
+                )
+                '''
+                if raise_errors:
+                    raise NotImplementedError()
+
+        return self, _status

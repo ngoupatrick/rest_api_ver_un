@@ -1,10 +1,11 @@
 #for wsgi.py
-'''
+
 from main import db
-'''
 
 #for main.py
+'''
 from src.main import db
+'''
 
 #for all py
 import datetime

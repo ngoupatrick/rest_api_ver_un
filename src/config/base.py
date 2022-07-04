@@ -8,7 +8,7 @@ load_dotenv(ENV_FILE)
 
 
 class Config:
-    DEBUG = True
+    DEBUG = False
     TESTING = True
     SECRET_KEY = environ.get("SECRET_KEY")
     FLASK_ENV = "development"
@@ -39,8 +39,8 @@ class ProdConfig(Config):
         "SQLALCHEMY_TRACK_MODIFICATIONS").lower().strip() == 'true'
 
 class LogConfig:
-    CONF_LOG_FILE_NAME = "logging.cfg"
-    LOG_FILE_NAME = "demolog.log"
+    CONF_LOG_FILE_NAME = environ.get("CONF_LOG_FILE_NAME")
+    LOG_FILE_NAME = environ.get("LOG_FILE_NAME")
     CONF_LOG_FILE_PATH = BASE_DIR / CONF_LOG_FILE_NAME
     LOG_FILE_PATH = BASE_DIR / LOG_FILE_NAME
     

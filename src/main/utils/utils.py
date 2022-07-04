@@ -28,11 +28,18 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
-
 def returnRep(msgErr, codeErr, isRealm=False, msgRealm="Login required!"):
     resp = make_response({"message": msgErr}, codeErr)
     if isRealm:
         resp = make_response({"message": msgErr}, codeErr, {
+                             'WWW-Authenticate': f'Basic realm="{msgRealm}"'})
+    return resp
+
+
+def returnRepJSON(JsonErr, codeErr, isRealm=False, msgRealm="Login required!"):
+    resp = make_response(JsonErr, codeErr)
+    if isRealm:
+        resp = make_response(JsonErr, codeErr, {
                              'WWW-Authenticate': f'Basic realm="{msgRealm}"'})
     return resp
 

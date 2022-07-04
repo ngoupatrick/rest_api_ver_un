@@ -9,3 +9,4 @@ Flask-Bcrypt
 Flask-SQLAlchemy
 flask-marshmallow
 SQLAlchemy
+Flask-Cors

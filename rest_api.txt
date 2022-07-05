@@ -1,0 +1,64 @@
+for rest app
+
+request-log:
+	https://www.sentinelone.com/blog/getting-started-quickly-with-flask-logging/
+	https://flask.palletsprojects.com/en/2.1.x/logging/
+	
+flask template:
+	https://towardsdatascience.com/download-a-flask-template-ready-to-plug-in-your-business-logic-bb9375e1be09
+	https://github.com/bonzanini/flask-api-template
+	
+marshmallow and sqlachemy:
+	https://develie.hashnode.dev/exploring-flask-sqlalchemy-queries
+	https://www.youtube.com/watch?v=taqpb8G8ny4&ab_channel=PrettyPrinted
+	https://flask-marshmallow.readthedocs.io/en/latest/
+	
+flask search:
+	https://blog.mindee.com/flask-sqlalchemy/
+	https://stackoverflow.com/questions/35030142/flask-restful-search-query
+	https://www.educative.io/answers/how-to-add-a-search-endpoint-in-flask
+	
+auth0:
+	https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+	https://auth0.com/blog/developing-restful-apis-with-python-and-flask/
+	
+Exceptions and handle errors:
+	https://stackoverflow.com/questions/71721840/flask-app-route-returning-bad-request-error
+	https://flask.palletsprojects.com/en/2.1.x/errorhandling/
+	https://flask.palletsprojects.com/en/1.1.x/patterns/errorpages/
+	https://tedboy.github.io/flask/_modules/werkzeug/exceptions.html
+	http://mitsuhiko.pocoo.org/wzdoc/exceptions.html
+	
+databases:
+	https://www.digitalocean.com/community/tutorials/how-to-use-flask-sqlalchemy-to-interact-with-databases-in-a-flask-application
+	https://dev.to/nahidsaikat/flask-with-sqlalchemy-marshmallow-5aj2
+	https://marshmallow.readthedocs.io/en/stable/quickstart.html#declaring-schemas
+	
+swagger doc:
+	https://github.com/flasgger/flasgger
+	
+best practices:
+	https://auth0.com/blog/best-practices-for-flask-api-development/
+	
+complete:
+	https://www.analyticsvidhya.com/blog/2022/01/rest-api-with-python-and-flask/
+	https://flask.palletsprojects.com/
+	
+example:
+	https://marshmallow.readthedocs.io/en/stable/examples.html
+	
+	
+api call js:
+	https://www.taniarascia.com/how-to-connect-to-an-api-with-javascript/
+	https://api.jquery.com/submit/
+	
+deploy:
+	https://towardsdatascience.com/how-to-deploy-a-flask-api-8d54dd8d8b8a
+	https://medium.com/@sabzblog/deploy-model-with-fastapi-and-heroku-b0eb33988923
+	
+convert curl:
+	https://tools.chilkat.io/curl.cshtml
+	https://www.toolfk.com/tools/online-curl.html
+	
+streamit:
+	https://auth0.com/blog/introduction-to-streamlit-and-streamlit-components/

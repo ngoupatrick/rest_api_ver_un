@@ -8,5 +8,6 @@ Flask-RESTful
 Flask-Bcrypt
 Flask-SQLAlchemy
 flask-marshmallow
+marshmallow-sqlalchemy
 SQLAlchemy
 Flask-Cors

@@ -21,7 +21,6 @@ class Config:
     ) or "sqlite:///{}".format(DATABASE_PATH)
     SQLALCHEMY_TRACK_MODIFICATIONS = environ.get(
         "SQLALCHEMY_TRACK_MODIFICATIONS").lower().strip() == 'true'
-    #SQLALCHEMY_ECHO = environ.get("SQLALCHEMY_ECHO").lower().strip()=='true'
 
 
 class ProdConfig(Config):

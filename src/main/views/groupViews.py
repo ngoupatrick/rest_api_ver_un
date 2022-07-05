@@ -2,7 +2,7 @@ from . import *
 
 
 class GroupResource(Resource):
-    # method_decorators=[token_required]
+    # method_decorators=[token_required] 
     @token_required
     def get(current_user, self, guid=None):
         if not checkAdmin(current_user):

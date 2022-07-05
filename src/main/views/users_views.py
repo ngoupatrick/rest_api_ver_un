@@ -1,15 +1,9 @@
 from click import password_option
 from flask import make_response, request, jsonify, Blueprint  # type:ignore
-#for wsgi.py
 
-from main.models.models import User  
-from main.utils.utils import token_required, checkAdmin
-
-#for main.py
-'''
 from src.main.models.models import User  
 from src.main.utils.utils import token_required, checkAdmin
-'''
+
 
 auth = Blueprint('auth', __name__)
 

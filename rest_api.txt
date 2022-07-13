@@ -49,6 +49,8 @@ example:
 	
 	
 api call js:
+	https://javascript.plainenglish.io/creating-a-dynamic-html-table-through-javascript-f554fba376cf
+	https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
 	https://www.taniarascia.com/how-to-connect-to-an-api-with-javascript/
 	https://api.jquery.com/submit/
 	

@@ -5,80 +5,12 @@
     <meta charset="utf-8">
     <title>submit demo</title>
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        
-        form {
-            border: 3px solid #f1f1f1;
-        }
-        
-        input[type=text],
-        input[type=password] {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-        
-        button {
-            background-color: #04AA6D;
-            color: white;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        button:hover {
-            opacity: 0.8;
-        }
-        
-        .cancelbtn {
-            width: auto;
-            padding: 10px 18px;
-            background-color: #f44336;
-        }
-        
-        .imgcontainer {
-            text-align: center;
-            margin: 24px 0 12px 0;
-        }
-        
-        img.avatar {
-            width: 40%;
-            border-radius: 50%;
-        }
-        
-        .container {
-            padding: 16px;
-        }
-        
-        span.psw {
-            float: right;
-            padding-top: 16px;
-        }
-        /* Change styles for span and cancel button on extra small screens */
-        
-        @media screen and (max-width: 300px) {
-            span.psw {
-                display: block;
-                float: none;
-            }
-            .cancelbtn {
-                width: 100%;
-            }
-        }
-    </style>
+    <script src="js/script.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body onload="fct()">
-    <form action="" method="post">
-
+<body>
+    <form onsubmit="return loads()" method="post">
         <div class="container">
             <label for="uname"><b>Username</b></label>
             <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
@@ -93,67 +25,5 @@
     </form>
     <span id="rep"></span>
     <div id="show_user"></div>
-    <script>
-        $(document).ready(function() {
-            var settings = {
-                'cache': false,
-                'dataType': "jsonp",
-                "async": true,
-                "crossDomain": true,
-                "url": "http://192.168.1.5:8000/ppersonnes/1",
-                "method": "GET",
-                "headers": {
-                    "accept": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                }
-            };
-
-            $.ajax(settings).done(function(response) {
-                console.log(response);
-                alert("ici");
-
-            }).fail(function(data) {
-                alert("error");
-                $("#show_user").text(data);
-            });
-        });
-
-        function fct() {
-            /*$("#show_user").text("Test").show();
-            alert("ici")
-            $.get("http://192.168.1.5:8000/users", function(data, status) {
-                //alert("Data: " + data + "\nStatus: " + status);
-                alert("ici")
-            });*/
-
-        }
-
-        $("form").submit(function(event) {
-            /*var rep_span = $("#rep")
-            var login = $("#uname").val()
-            var psw = $("#psw").val()
-            var uri = "http://192.168.5.246:8000/users"
-            var method_POST = "POST"
-            var method_GET = "GET"
-            var async = true
-
-            var xhr = new XMLHttpRequest();
-            xhr.open(method_POST, uri, async);
-            //Envoie les informations du header adaptées avec la requête
-            xhr.setRequestHeader("Content-Type", "application/json"); //application/x-www-form-urlencoded
-
-            xhr.onreadystatechange = function() { //Appelle une fonction au changement d'état.
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    // Requête finie, traitement ici.
-                    alert("Please")
-                }
-                if (this.readyState === XMLHttpRequest.DONE && this.status !== 200) {
-                    // Requête finie, traitement ici.
-                    alert("err")
-                }
-            }
-            xhr.send("{'id':1}");
-            //event.preventDefault();*/
-        });
-    </script>
+    <div id="scoreboard"></div>
 </body>

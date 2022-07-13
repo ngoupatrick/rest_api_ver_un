@@ -11,8 +11,8 @@ auth = Blueprint('auth', __name__)
 def data(pubid):
     return jsonify({'message' : f'This data is readable by anybody; {pubid}'})
 
-@auth.route('/login')
-def login():    
+@auth.route('/login', methods=['POST'])
+def login():
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
         resp = make_response(
@@ -27,7 +27,7 @@ def login():
         )
         resp.headers['WWW-Authenticate'] = 'Basic realm="Login required!"'
         return resp
-    if user.verify_password(auth.password):        
+    if user.verify_password(auth.password):
         token = user.generate_token()
         return jsonify({'token' : token.decode('utf-8'),'puid':user.puid})
     resp = make_response(
@@ -35,48 +35,3 @@ def login():
     )
     resp.headers['WWW-Authenticate'] = 'Basic realm="Login required!"'
     return resp
-'''
-@auth.route('/user', methods=['GET'])
-@token_required
-def get_all_users(current_user):
-    if not checkAdmin(current_user):
-        return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
-    users = User.query.all()
-    output = []
-    for user in users:
-        user_data = {}
-        user_data['puid'] = user.puid
-        user_data['login'] = user.login
-        user_data['is_admin'] = user.is_admin()
-        output.append(user_data)
-    return jsonify({'users' : output})
-
-@auth.route('/user/<pubid>', methods=['GET'])
-@token_required
-def get_one_user(current_user, puid):
-    breakpoint()
-    if not checkAdmin(current_user):
-        return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
-    user = User.query.filter_by(puid=puid).first()
-    if not user:
-        return jsonify({'message' : 'No user found!'})
-    user_data = {}
-    user_data['puid'] = user.puid
-    user_data['login'] = user.login
-    user_data['is_admin'] = user.is_admin()
-    return jsonify({'user' : user_data})
-
-@auth.route('/user', methods=['POST'])
-@token_required
-def create_user(current_user):
-    if not checkAdmin(current_user):
-        return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
-    json_data = request.get_json()
-    password = json_data.get("password", "")
-    login=json_data.get("login", "")
-    nom=json_data.get("nom", "")
-    gid=json_data.get("gid",0)
-    new_user = User(login=login, password=password, nom=nom, gid=gid)
-    new_user.save()
-    return jsonify({'message' : 'New user created!'}), 201
-'''

@@ -11,3 +11,4 @@ flask-marshmallow
 marshmallow-sqlalchemy
 SQLAlchemy
 Flask-Cors
+psycopg2-binary

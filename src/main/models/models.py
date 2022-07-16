@@ -155,7 +155,7 @@ class Patient(db.Model):
     nom = db.Column(db.String, nullable=False)
     prenom = db.Column(db.String, default='')
     lieu_naiss = db.Column(db.String, default='')
-    date_naiss = db.Column(db.DateTime, server_default=db.func.now())
+    date_naiss = db.Column(db.Date, server_default=db.func.now())
     village = db.Column(db.String, default='')
     hameau = db.Column(db.String, default='')
     chef_de_concession = db.Column(db.String, default='')

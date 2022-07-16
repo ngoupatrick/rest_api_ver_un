@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Patients</title>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="js/script.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <form onsubmit="return savepatient()" method="post">
+        <div class="container">
+            <label for="nom"><b>Nom</b></label>
+            <input type="text" placeholder="Enter Patient Name" name="nom" id="nom" required>
+
+            <label for="prenom"><b>Prenom</b></label>
+            <input type="text" placeholder="Enter Patient Surname" name="prenom" id="prenom">
+
+            <label for="chef_concession"><b>Chef de Concession</b></label>
+            <input type="text" placeholder="Chef de Concession" name="chef_concession" id="chef_concession">
+
+            <label for="mere"><b>Nom de la mere</b></label>
+            <input type="text" placeholder="Nom de la mere" name="mere" id="mere">
+
+            <label for="lieu_naissance"><b>Lieu de Naissance</b></label>
+            <input type="text" placeholder="Lieu de Naissance" name="lieu_naissance" id="lieu_naissance">
+
+            <label for="hameau"><b>Hameau</b></label>
+            <input type="text" placeholder="Hameau" name="hameau" id="hameau">
+
+            <label for="village"><b>Village</b></label>
+            <input type="text" placeholder="Village" name="village" id="village">
+
+            <label for="sexe"><b>Sexe</b></label>
+            <input type="text" placeholder="Sexe" name="sexe" id="sexe" required>
+
+            <button type="submit">Save</button>
+
+        </div>
+
+    </form>
+    <span id="rep"></span>
+</body>

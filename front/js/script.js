@@ -1,77 +1,79 @@
+//token remote
+//const token_ = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU4MTA4MDQ4fQ.WFmb2ucpeZweLJL3baHWIHkzu9RBD0NZzsGt5YcK0dM"
+//token local
+const token_ = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU4MDkzMjMzfQ.Y_vN1Q4oyYKa_9CsY-7jDlppFbz4gSIpmVX_mGwuVJY";
+
+//remote base url
+//const url_base = "https://nanpson.pythonanywhere.com/"
+//local base url
+const url_base = "http://192.168.86.146:8000/"
+
 function loads() {
-    var uname = document.getElementById('uname').value;
-    var psw = document.getElementById('psw').value;
+    /*
+        var uname = document.getElementById('uname').value;
+        var psw = document.getElementById('psw').value;
 
-    var url = "https://nanpson.pythonanywhere.com/login";
+        var url = url_base+"login";
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
 
-    xhr.setRequestHeader("Authorization", "Basic " + window.btoa(uname + ":" + psw));
-    xhr.onload = function() {
-        if (this.status == 200) {
-            //document.getElementById("rep").innerHTML = this.response;
-            getUsers()
-        } else {
+        xhr.setRequestHeader("Authorization", "Basic " + window.btoa(uname + ":" + psw));
+        xhr.onload = function() {
+            if (this.status == 200) {
+                //document.getElementById("rep").innerHTML = this.response;
+                getUsers()
+            } else {
 
-            alert("HTTP ERROR " + this.status);
-        }
-    };
-    xhr.send();
+                alert("HTTP ERROR " + this.status);
+            }
+        };
+        xhr.send();
+        return false;
+    */
+    getUsers()
     return false;
 }
 
 const savepatient = () => {
-    var name_ = document.getElementById('nom').value
-    var sexe = document.getElementById('sexe').value
+    let name_ = document.getElementById('nom').value
+    let sexe = document.getElementById('sexe').value
 
-    var data = new FormData();
-    data.append("nom", name_);
-    data.append("sexe", sexe);
+    let data = { nom: name_, sexe: sexe };
 
     var myHeaders = new Headers();
     myHeaders = new Headers({
         "Content-Type": "application/json",
-        //"Content-Length": content.length.toString(),
         "X-Custom-Header": "ProcessThisImmediately",
-        "x-access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU3OTE4MjgwfQ.o9gCIhN14FijVG8ZpDKb1N05sH1QJm_CP_R3REbpZ-o",
+        "x-access-token": token_,
     });
-    var myInit = {
+
+    let myInit = {
         method: 'POST',
         headers: myHeaders,
-        //mode: 'cors',
-        body: data,
+        body: JSON.stringify(data),
         cache: 'default'
     };
-    var url = 'https://nanpson.pythonanywhere.com/V1/patient';
-    fetch(url, { method: "POST", body: data });
 
-    /*
-    var myRequest = new Request(url, myInit);
-    fetch(myRequest)
-        .then(function(response) {
-            alert("ici 1")
-            console.log(response.json())
-            return response.json()
+    const url = url_base + "V1/patients";
+    var request = new Request(url, myInit);
+
+    fetch(request)
+        .then(res => res.json())
+        .then(patients => {
+            for (const patients_ of patients) {
+                console.log(patients_.nom);
+            }
         })
-        .then(function(data) {
-            alert("ici 2")
-            console.log(data)
-            rep = document.getElementById("rep")
-            rep.innerHTML = data
-        }).catch(error => console.error('Error:', error));
-    
-    rep = document.getElementById("rep")
-    rep.innerHTML = sexe;*/
+        .catch(error => console.error('MYError:', error));
 }
 
-const getUsers = () => {
+const loadPatients = () => {
     var myHeaders = new Headers();
     myHeaders = new Headers({
         "Content-Type": "application/json",
-        //"Content-Length": content.length.toString(),
         "X-Custom-Header": "ProcessThisImmediately",
-        "x-access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU3OTE4MjgwfQ.o9gCIhN14FijVG8ZpDKb1N05sH1QJm_CP_R3REbpZ-o",
+        "x-access-token": token_,
     });
     var myInit = {
         method: 'GET',
@@ -79,7 +81,34 @@ const getUsers = () => {
         //mode: 'cors',
         cache: 'default'
     };
-    var url = 'https://nanpson.pythonanywhere.com/V1/users'
+
+    const url = url_base + "V1/patients";
+    var myRequest = new Request(url, myInit);
+    fetch(myRequest) // Fetch for all scores. The response is an array of objects that is sorted in decreasing order
+        .then(res => res.json())
+        .then(users => {
+            createUserboardTable() // Clears scoreboard div if it has any children nodes, creates & appends the table
+                // Iterates through all the objects in the scores array and appends each one to the table body
+            for (const user_ of users) {
+                let userIndex = users.indexOf(user_) + 1 // Index of score in score array for global ranking (these are already sorted in the back-end)
+                appendUsers(user_, userIndex) // Creates and appends each row to the table body
+            }
+        })
+}
+
+const getUsers = () => {
+    var myHeaders = new Headers();
+    myHeaders = new Headers({
+        "Content-Type": "application/json",
+        "X-Custom-Header": "ProcessThisImmediately",
+        "x-access-token": token_,
+    });
+    var myInit = {
+        method: 'GET',
+        headers: myHeaders,
+        cache: 'default'
+    };
+    var url = url_base + "V1/users";
     var myRequest = new Request(url, myInit);
     fetch(myRequest) // Fetch for all scores. The response is an array of objects that is sorted in decreasing order
         .then(res => res.json())

@@ -22,7 +22,12 @@ auth0:
 	https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 	https://auth0.com/blog/developing-restful-apis-with-python-and-flask/
 	
+CORS:
+	https://flask-cors.readthedocs.io/en/latest/api.html
+	https://flask-cors.readthedocs.io/en/latest/
+	
 Exceptions and handle errors:
+	https://hackersandslackers.com/flask-routes/
 	https://stackoverflow.com/questions/71721840/flask-app-route-returning-bad-request-error
 	https://flask.palletsprojects.com/en/2.1.x/errorhandling/
 	https://flask.palletsprojects.com/en/1.1.x/patterns/errorpages/
@@ -50,6 +55,7 @@ example:
 	
 api call js:
 	https://javascript.plainenglish.io/creating-a-dynamic-html-table-through-javascript-f554fba376cf
+	https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data-fr
 	https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
 	https://www.topcoder.com/thrive/articles/fetch-api-javascript-how-to-make-get-and-post-requests
 	https://www.taniarascia.com/how-to-connect-to-an-api-with-javascript/

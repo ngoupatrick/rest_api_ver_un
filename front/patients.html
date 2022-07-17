@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body onload="loadPatients()">
+    <!--onload="loadPatients()"-->
+    <div id="scoreboard"></div>
     <form onsubmit="return savepatient()" method="post">
         <div class="container">
             <label for="nom"><b>Nom</b></label>
@@ -41,5 +43,4 @@
         </div>
 
     </form>
-    <span id="rep"></span>
 </body>

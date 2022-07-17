@@ -17,10 +17,14 @@ class PatientResource(Resource):
         return data if data else returnRep(msgErr='Data Not found!', codeErr=404)
 
     @token_required
-    def post(current_user: User, self):
+    def post(current_user: User, self):  
+        #breakpoint()      
         if not checkAdmin(current_user):
             return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
-        json_data = request.get_json()
+        try:
+            json_data = request.get_json()
+        except Exception as e:
+            return returnRep(msgErr=e, codeErr=404) 
         ppid = json_data.get("ppid", "")
         if ppid:
             data = Patient.query.filter_by(ppid=ppid).first_or_404(
@@ -44,3 +48,5 @@ class PatientResource(Resource):
                 data.update(json_data)
                 db.session.commit()
         return patient_schema.dump(data.first_or_404(description='No Data Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)
+    
+   

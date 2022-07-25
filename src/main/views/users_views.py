@@ -1,5 +1,6 @@
 from click import password_option
 from flask import make_response, request, jsonify, Blueprint  # type:ignore
+from sqlalchemy import func # type:ignore
 
 from src.main.models.models import User  
 from src.main.utils.utils import token_required, checkAdmin
@@ -20,7 +21,7 @@ def login():
         )
         resp.headers['WWW-Authenticate'] = 'Basic realm="Login required!"'
         return resp
-    user = User.query.filter_by(login=auth.username).first()
+    user = User.query.filter(func.lower(User.login)==func.lower(auth.username)).first()
     if not user:
         resp = make_response(
             {"message": "No matching user found"}, 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'}
@@ -29,7 +30,7 @@ def login():
         return resp
     if user.verify_password(auth.password):
         token = user.generate_token()
-        return jsonify({'token' : token.decode('utf-8'),'puid':user.puid})
+        return jsonify({'token' : token.decode('utf-8'),'puid':user.puid,'nom':user.nom,'prenom':user.prenom})
     resp = make_response(
         {"message": "No auth, no user, nothing"}, 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'}
     )

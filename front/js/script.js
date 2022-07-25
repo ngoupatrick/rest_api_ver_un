@@ -1,69 +1,78 @@
 //token remote
-//const token_ = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU4MTA4MDQ4fQ.WFmb2ucpeZweLJL3baHWIHkzu9RBD0NZzsGt5YcK0dM"
+//const token_ = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU4MTIwNDU0fQ.09S8aKVDULahpxCF7CPKanFlhsI4vqTBbPeBPxJpjqg";
 //token local
-const token_ = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU4MDkzMjMzfQ.Y_vN1Q4oyYKa_9CsY-7jDlppFbz4gSIpmVX_mGwuVJY";
+const token_ = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWlkIjoiNzUwZjBhYzMtN2I5MC00YjgwLTgzZGUtMmQ1ZWE0ZTQ4NTBhIiwiZXhwIjoxNjU4MTIwMzkwfQ.Sez10e4b5jduOW2sKkVge0W3H2j3wYOvrUc9ESzZlJo";
 
 //remote base url
-//const url_base = "https://nanpson.pythonanywhere.com/"
+//const url_base = "https://nanpson.pythonanywhere.com/";
 //local base url
-const url_base = "http://192.168.86.146:8000/"
+//const url_base = "http://192.168.86.146:8000/"
+const url_base = "http://localhost:8000/"
 
 function loads() {
-    /*
-        var uname = document.getElementById('uname').value;
-        var psw = document.getElementById('psw').value;
 
-        var url = url_base+"login";
+    var uname = document.getElementById('uname').value;
+    var psw = document.getElementById('psw').value;
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url);
+    var url = url_base + "login";
 
-        xhr.setRequestHeader("Authorization", "Basic " + window.btoa(uname + ":" + psw));
-        xhr.onload = function() {
-            if (this.status == 200) {
-                //document.getElementById("rep").innerHTML = this.response;
-                getUsers()
-            } else {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
 
-                alert("HTTP ERROR " + this.status);
-            }
-        };
-        xhr.send();
-        return false;
-    */
-    getUsers()
+    xhr.setRequestHeader("Authorization", "Basic " + window.btoa(uname + ":" + psw));
+    xhr.onload = function() {
+        if (this.status == 200) {
+            //document.getElementById("rep").innerHTML = this.response;
+            getUsers()
+        } else {
+            alert("HTTP ERROR " + this.status);
+        }
+    };
+    xhr.send();
     return false;
+
+    //getUsers()
+    //return false;
 }
 
-const savepatient = () => {
+const savepatient = async() => {
     let name_ = document.getElementById('nom').value
     let sexe = document.getElementById('sexe').value
 
-    let data = { nom: name_, sexe: sexe };
+    let data = { "nom": name_, "sexe": sexe };
 
     var myHeaders = new Headers();
     myHeaders = new Headers({
         "Content-Type": "application/json",
         "X-Custom-Header": "ProcessThisImmediately",
         "x-access-token": token_,
+        //'Access-Control-Allow-Origin': '*',
+        //'Origin': '*',
+        //"Cross-Origin-Resource-Policy": "cross-origin",
+        //"credentials": "include",
+        //"Access-Control-Request-Headers": "authorization",
+        //"Authorization": "Basic cGF0cmljazpw",
     });
 
     let myInit = {
         method: 'POST',
         headers: myHeaders,
         body: JSON.stringify(data),
-        cache: 'default'
+        cache: 'no-cache', //default
+        referrerPolicy: 'no-referrer',
+        mode: 'cors',
     };
 
     const url = url_base + "V1/patients";
     var request = new Request(url, myInit);
 
-    fetch(request)
+    await fetch(request)
         .then(res => res.json())
         .then(patients => {
-            for (const patients_ of patients) {
+            /*for (const patients_ of patients) {
                 console.log(patients_.nom);
-            }
+            }*/
+            console.log("Ici")
         })
         .catch(error => console.error('MYError:', error));
 }

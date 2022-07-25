@@ -171,8 +171,9 @@ class Patient(db.Model):
         self.patient_code = str(uuid.uuid4())
 
     def __repr__(self):
-        rslt = {
-            "pid": self.pid,
+        
+        rslt = { 
+            "pid": self.pid,           
             "ppid": self.ppid,
             "created": self.created,
             "modified": self.modified,
@@ -331,7 +332,7 @@ class User(db.Model):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.pass_hash = generate_password_hash(kwargs.get('password'))
+        self.pass_hash = generate_password_hash(kwargs.get('pass_hash'))
         self.puid = str(uuid.uuid4())
         self.user_code = str(uuid.uuid4())
 

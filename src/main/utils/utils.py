@@ -24,7 +24,7 @@ def token_required(f):
         if current_user is None:
             resp = returnRep(msgErr="No matching user found",
                              codeErr=401, isRealm=True, msgRealm="Login required!")
-            return resp
+            return resp        
         return f(current_user, *args, **kwargs)
     return decorated
 

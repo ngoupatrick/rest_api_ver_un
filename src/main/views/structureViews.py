@@ -34,6 +34,8 @@ class StructureResource(Resource):
         if not checkAdmin(current_user):
             return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
         json_data = request.get_json()
+        #TODO: update serveur
+        json_data.pop("users", None)
         pstid = json_data.get("pstid", "")
         data = {}
         if pstid:

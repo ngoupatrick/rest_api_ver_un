@@ -34,6 +34,8 @@ class SymptomeResource(Resource):
         if not checkAdmin(current_user):
             return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
         json_data = request.get_json()
+        #TODO: update serveur
+        json_data.pop("consultation_symptomes", None)
         psid = json_data.get("psid", "")
         data = {}
         if psid:

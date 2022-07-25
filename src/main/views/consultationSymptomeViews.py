@@ -30,7 +30,7 @@ class ConsultationSymptomeResource(Resource):
     def put(current_user:User,self): 
         if not checkAdmin(current_user):
             return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
-        json_data = request.get_json()
+        json_data = request.get_json()        
         pcsid = json_data.get("pcsid","")
         data={}        
         if pcsid:

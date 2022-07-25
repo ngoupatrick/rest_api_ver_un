@@ -17,7 +17,7 @@ def create_app(config_filename=None):
 
     # Database configs
     if (app.config["ENV"] == 'development'):
-        app.config.from_object('src.config.base.Config') 
+        app.config.from_object('src.config.base.Config')
     elif (app.config["ENV"] == 'production'):
         app.config.from_object('src.config.base.ProdConfig')
     elif config_filename:
@@ -40,32 +40,30 @@ def create_app(config_filename=None):
 
     @app.after_request
     def after_request(response):
-        response.headers.add("Access-Control-Allow-Headers",
-                             "Content-Type,Authorization,x-access-token,X-Custom-Header,true")#
+        response.headers.add("Access-Control-Allow-Headers","*"
+                             )#"Content-Type,Authorization,x-access-token,X-Custom-Header,true"
         response.headers.add("Access-Control-Allow-Methods",
-                             "GET,PUT,PATCH,POST,DELETE,OPTIONS")
-        response.headers.add("access-control-allow-origin",
+                             "*")#"GET,PUT,PATCH,POST,DELETE,OPTIONS"
+        response.headers.add("Access-Control-Allow-Origin",
                              "*")
         return response
-    
+
     #Handling errors. use abort(codeErr) to call manually these functions
 
     @app.errorhandler(400)
-    def bad_request(error):       
+    def bad_request(error):
         return make_response({
             'success': False,
             'error': 400,
             'message': 'Server cannot or will not process the request due to client error (for example, malformed request syntax, invalid request message framing, or deceptive request routing).',
-            'message_error': error
         }, 400)
-        
+
     @app.errorhandler(403)
     def not_found(error):
         return make_response({
             'success': False,
             'error': 403,
             'message': 'Forbidden resource',
-            'message_error': error
         }, 403)
 
     @app.errorhandler(404)
@@ -74,34 +72,30 @@ def create_app(config_filename=None):
             'success': False,
             'error': 404,
             'message': 'resource not found',
-            'message_error': error
         }, 404)
-        
+
     @app.errorhandler(405)
     def not_found(error):
         return make_response({
             'success': False,
             'error': 405,
             'message': 'method not allowed',
-            'message_error': error
         }, 405)
-        
+
     @app.errorhandler(422)
     def unprocessable(error):
         return make_response({
             'success': False,
             'error': 422,
             'message': 'unprocessable',
-            'message_error': error
         }, 422)
-        
+
     @app.errorhandler(500)
     def internal_server_error(error):
         return make_response({
             'success': False,
             'error': 500,
             'message': 'Internall server error',
-            'message_error': error
         }, 500)
 
 
@@ -112,12 +106,12 @@ def create_app(config_filename=None):
         # Register Blueprints
         app.register_blueprint(default_routes)
         app.register_blueprint(admin_routes)
-        
+
         #CORS(default_routes)
         #CORS(admin_routes)
 
         print(app.url_map)
-        
+
         # database intialisation
         db.create_all()
 

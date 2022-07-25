@@ -39,6 +39,9 @@ class PatientResource(Resource):
         if not checkAdmin(current_user):
             return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
         json_data = request.get_json()
+        #TODO: update serveur
+        json_data.pop("consultations", None)
+        json_data.pop("date_naiss", None)        
         ppid = json_data.get("ppid", "")
         data = {}
         if ppid:

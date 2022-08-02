@@ -24,6 +24,14 @@ class ConsultationResource(Resource):
         if pcid:  
             data=Consultation.query.filter_by(pcid=pcid).first_or_404(description='Not Found!') 
         else:
+            # TODO: CHECK DATE_CONSUL
+            mois = json_data.pop("mois", None)
+            annee = json_data.pop("annee", None)
+            jour = json_data.pop("jour", None)
+            date_consul = transformDate(jour_=jour, mois_=mois, annee_=annee)
+            if date_consul:
+                json_data["date_consul"] = date_consul
+            # TODO: Ajout des données
             data = Consultation(**json_data)
             data.save()    
         return consultation_schema.dump(data) if data else returnRep(msgErr='Data Not found!', codeErr=404)
@@ -43,6 +51,14 @@ class ConsultationResource(Resource):
             data=Consultation.query.filter_by(pcid=pcid)
             if data:                
                 json_data['modified'] = datetime.now()
+                # TODO: CHECK DATE_CONSUL
+                mois = json_data.pop("mois", None)
+                annee = json_data.pop("annee", None)
+                jour = json_data.pop("jour", None)
+                date_consul = transformDate(jour_=jour, mois_=mois, annee_=annee)
+                if date_consul:
+                    json_data["date_consul"] = date_consul
+                # TODO: MAJ des données
                 data.update(json_data)
                 db.session.commit()
         return consultation_schema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)

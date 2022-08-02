@@ -32,8 +32,6 @@ class Type_Symptome(db.Model):
         db.session.add(self)
         db.session.commit()
 
-# class of symptomes
-
 
 class Symptome(db.Model):
     __tablename__ = "symptome"

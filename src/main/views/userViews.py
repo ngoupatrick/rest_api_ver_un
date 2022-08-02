@@ -27,6 +27,19 @@ class UserResource(Resource):
                 description='Not Found!')
         else:
             # TODO: CHECK GID
+            # TODO: CHECK DATE_NAISS
+            mois = json_data.pop("mois", None)
+            annee = json_data.pop("annee", None)
+            jour = json_data.pop("jour", None)
+            date_naiss = transformDate(jour_=jour, mois_=mois, annee_=annee)
+            if date_naiss:
+                json_data["date_naiss"] = date_naiss
+            # TODO: CHECH SEXE
+            sexe = json_data.pop("sexe", None)
+            sexe = transformSexe(sexe_=sexe)
+            if sexe:
+                json_data["sexe"] = sexe
+            # TODO: Ajout des données
             data = User(**json_data)
             data.save()
         return user_schema.dump(data) if data else returnRep(msgErr='Data Not found!', codeErr=404)
@@ -36,10 +49,9 @@ class UserResource(Resource):
         if not checkAdmin(current_user):
             return returnRep(msgErr='Cannot perform that function!', codeErr=401, isRealm=True, msgRealm="Login required!")
         json_data = request.get_json()
-        #TODO: update serveur
+        # TODO: update serveur
         json_data.pop("consultations", None)
         json_data.pop("resultats", None)
-        json_data.pop("date_naiss", None)
         puid = json_data.get("puid", "")
         data = {}
         if puid:
@@ -47,6 +59,19 @@ class UserResource(Resource):
             if data:
                 json_data['modified'] = datetime.now()
                 # TODO: CHECK GID
+                # TODO: CHECK DATE_NAISS
+                mois = json_data.pop("mois", None)
+                annee = json_data.pop("annee", None)
+                jour = json_data.pop("jour", None)
+                date_naiss = transformDate(jour_=jour, mois_=mois, annee_=annee)
+                if date_naiss:
+                    json_data["date_naiss"] = date_naiss
+                # TODO: CHECH SEXE
+                sexe = json_data.pop("sexe", None)
+                sexe = transformSexe(sexe_=sexe)
+                if sexe:
+                    json_data["sexe"] = sexe
+                # TODO: MAJ des données
                 data.update(json_data)
                 db.session.commit()
         return user_schema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)

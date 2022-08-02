@@ -27,6 +27,13 @@ class ResultatResource(Resource):
             data = Resultat.query.filter_by(
                 prid=prid).first_or_404(description='Not Found!')
         else:
+            # TODO: CHECK DATE_RESULTAT
+            mois = json_data.pop("mois", None)
+            annee = json_data.pop("annee", None)
+            jour = json_data.pop("jour", None)
+            date_resultat = transformDate(jour_=jour, mois_=mois, annee_=annee)
+            if date_resultat:
+                json_data["date_resultat"] = date_resultat
             data = Resultat(**json_data)
             data.save()
         return resultat_schema.dump(data) if data else returnRep(msgErr='Data Not found!', codeErr=404)
@@ -42,6 +49,13 @@ class ResultatResource(Resource):
             data = Resultat.query.filter_by(prid=prid)
             if data:
                 json_data['modified'] = datetime.now()
+                # TODO: CHECK DATE_NAISS
+                mois = json_data.pop("mois", None)
+                annee = json_data.pop("annee", None)
+                jour = json_data.pop("jour", None)
+                date_resultat = transformDate(jour_=jour, mois_=mois, annee_=annee)
+                if date_resultat:
+                    json_data["date_resultat"] = date_resultat
                 data.update(json_data)
                 db.session.commit()
         return resultat_schema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)

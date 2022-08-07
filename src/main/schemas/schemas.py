@@ -5,35 +5,35 @@ from . import *
 class Consultation_SymptomeSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Consultation_Symptome
-        fields = ("pcsid", "description", "sid","cid")
+        fields = ("pcsid", "description", "sid","cid","csid")
         include_fk = True
 
 
 class SymptomeSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Symptome
-        fields = ("psid", "intitule", "tsid","consultation_symptomes")
+        fields = ("psid", "intitule", "tsid","consultation_symptomes","sid")
     symptomes = ma.Nested(Consultation_SymptomeSchema(many=True))
 
 
 class Type_SymptomeSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Type_Symptome
-        fields = ("ptsid", "intitule", "symptomes")
+        fields = ("ptsid", "intitule", "symptomes","tsid")
     symptomes = ma.Nested(SymptomeSchema(many=True))
 
 
 class ResultatSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Resultat
-        fields = ("prid", "code_resultat", "date_resultat","cid","uid")
+        fields = ("prid", "code_resultat", "date_resultat","cid","uid","rid")
         include_fk = True
 
 
 class ConsultationSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Consultation
-        fields = ("pcid", "code_consul", "date_consul","motif","age_patient_annee","age_patient_mois","pid","uid","consultation_symptomes","resultats")
+        fields = ("pcid", "code_consul", "date_consul","motif","age_patient_annee","age_patient_mois","pid","uid","consultation_symptomes","resultats","cid")
         include_fk = True
     consultation_symptomes = ma.Nested(Consultation_SymptomeSchema(many=True))
     resultats = ma.Nested(ResultatSchema(many=True))
@@ -42,7 +42,7 @@ class ConsultationSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
 class PatientSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Patient
-        fields = ("ppid", "patient_code", "nom","prenom","lieu_naiss","date_naiss","village","hameau","chef_de_concession","nom_mere","sexe","consultations")
+        fields = ("ppid", "patient_code", "nom","prenom","lieu_naiss","date_naiss","village","hameau","chef_de_concession","nom_mere","sexe","consultations","pid")
     consultations = ma.auto_field()
     #consultations = ma.Nested(ConsultationSchema(many=True))
 
@@ -50,7 +50,7 @@ class PatientSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
 class UserSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.User
-        fields = ("puid", "user_code", "login","etat","nom","prenom","lieu_naiss","date_naiss","sexe","adresse","tel","utid","stid","gid","consultations","resultats")
+        fields = ("puid", "user_code", "login","etat","nom","prenom","lieu_naiss","date_naiss","sexe","adresse","tel","utid","stid","gid","consultations","resultats","uid")
         include_fk = True
     consultations = ma.Nested(ConsultationSchema(many=True))
     resultats = ma.Nested(ResultatSchema(many=True))
@@ -59,14 +59,14 @@ class UserSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
 class User_TypeSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.User_Type
-        fields = ("putid", "intitule", "users")
+        fields = ("putid", "intitule", "users","utid")
     users = ma.Nested(UserSchema(many=True))
 
 
 class GroupsSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Groups
-        fields = ("guid", "intitule", "description","access_perm","users")
+        fields = ("guid", "intitule", "description","access_perm","users","gid")
     #users = ma.auto_field()
     users = ma.Nested(UserSchema(many=True))
 
@@ -74,7 +74,7 @@ class GroupsSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
 class StructureSchema(ma.SQLAlchemyAutoSchema):  # type:ignore
     class Meta:
         model = models.Structure
-        fields = ("pstid", "immatriculation", "intitule","type_structure","users")
+        fields = ("pstid", "immatriculation", "intitule","type_structure","users","stid")
     users = ma.Nested(UserSchema(many=True))
 
 

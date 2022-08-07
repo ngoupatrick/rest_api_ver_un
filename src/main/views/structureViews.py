@@ -25,6 +25,10 @@ class StructureResource(Resource):
             data = Structure.query.filter_by(
                 pstid=pstid).first_or_404(description='Not Found!')
         else:
+            immatriculation=json_data.pop("immatriculation", None)
+            if not immatriculation:
+                immatriculation=Structure.generate_immatriculation()
+            json_data["immatriculation"]=immatriculation
             data = Structure(**json_data)
             data.save()
         return structure_schema.dump(data) if data else returnRep(msgErr='Data Not found!', codeErr=404)

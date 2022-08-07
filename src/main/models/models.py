@@ -169,9 +169,9 @@ class Patient(db.Model):
         self.patient_code = str(uuid.uuid4())
 
     def __repr__(self):
-        
-        rslt = { 
-            "pid": self.pid,           
+
+        rslt = {
+            "pid": self.pid,
             "ppid": self.ppid,
             "created": self.created,
             "modified": self.modified,
@@ -269,12 +269,14 @@ class Structure(db.Model):
     type_structure = db.Column(db.String, default='', nullable=False)
     # list of all users of this structure
     users = db.relationship(
-        'User', backref='Structue', lazy=True, uselist=True)
+        'User', backref='Structure', lazy=True, uselist=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pstid = str(uuid.uuid4())
-        self.immatriculation = str(uuid.uuid4())
+
+    def generate_immatriculation():
+        return str(uuid.uuid4())
 
     def __repr__(self):
         rslt = {

@@ -44,4 +44,4 @@ class UserTypeResource(Resource):
                 json_data['modified'] = datetime.now()
                 data.update(json_data)
                 db.session.commit()
-        return User_TypeSchema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)
+        return user_type_schema.dump(data.first_or_404(description='Not Found!')) if data else returnRep(msgErr='Data Not found!', codeErr=404)
